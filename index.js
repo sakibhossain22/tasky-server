@@ -36,6 +36,7 @@ async function run() {
         // await client.connect();
         const taskCollection = client.db('task-collection').collection('tasks')
 
+
         app.get('/all-tasks', async (req, res) => {
             const email = req?.query.email
             const todoQ = { email: email, status : 'Todo' }
@@ -45,19 +46,24 @@ async function run() {
             const completedQ = { email: email, status : 'Completed' }
             const completed = await taskCollection.find(completedQ).toArray()
             const result = await taskCollection.find().toArray()
+            console.log({todo, ongoing, completed,result});
             return res.send({todo, ongoing, completed,result})
         })
+        app.get('/home-stat', async (req, res) => {
+            const email = req?.query.email;
+            const query = { email: email };
+            const result = await taskCollection.find(query).toArray();
+        
+            // Create a new array with reversed order
+            const reversedResult = [...result].reverse();
+        
+            res.send(reversedResult);
+        });
+        
 
         app.post('/my-task', async (req, res) => {
             const data = req.body
             const result = await taskCollection.insertOne(data)
-            res.send(result)
-        })
-
-        app.get('/book-parcel/update/:id', async (req, res) => {
-            const id = req?.params?.id
-            const query = { _id: new ObjectId(id) }
-            const result = await bookParcelCollection.findOne(query)
             res.send(result)
         })
 
@@ -66,7 +72,6 @@ async function run() {
             try {
                 const id = req.params.id
                 const data = req.body
-                console.log(data, id);
                 const query = { _id: new ObjectId(id) }
                 const options = { upsert: true };
                 const doc = {
@@ -101,6 +106,6 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Parcel Is Going')
+    res.send('Task Manager Is Going')
 })
-app.listen(port, console.log('Parcel boss is running'))
+app.listen(port, console.log('Task Manager is running'))
