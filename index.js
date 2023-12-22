@@ -75,15 +75,18 @@ async function run() {
         })
 
         // manage delivery
-        app.patch('/update-status/:id', async (req, res) => {
+        app.patch('/update-task/:id', async (req, res) => {
             try {
-                const id = req.params.id
+                const id = req?.params.id
                 const data = req.body
                 const query = { _id: new ObjectId(id) }
                 const options = { upsert: true };
                 const doc = {
                     $set: {
-                        status: data?.status
+                        title: data?.title,
+                        description: data?.description,
+                        deadline: data?.deadline,
+                        priority: data?.priority,
                     }
                 }
                 const result = await taskCollection.updateOne(query, doc, options)
