@@ -55,8 +55,6 @@ async function run() {
             const email = req?.query.email;
             const query = { email: email };
             const result = await taskCollection.find(query).toArray();
-        
-            // Create a new array with reversed order
             const reversedResult = [...result].reverse();
         
             res.send(reversedResult);
@@ -66,6 +64,13 @@ async function run() {
         app.post('/my-task', async (req, res) => {
             const data = req.body
             const result = await taskCollection.insertOne(data)
+            res.send(result)
+        })
+        
+        app.get('/my-task/:id', async (req, res) => {
+            const id = req?.params.id
+            const query = {_id : new ObjectId(id)}
+            const result = await taskCollection.findOne(query)
             res.send(result)
         })
 
