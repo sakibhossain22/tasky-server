@@ -14,6 +14,8 @@ const corsOptions = {
 app.use(cors({
     origin: [
         'http://localhost:5173',
+        'https://tasky-cb8ab.firebaseapp.com',
+        'https://tasky-cb8ab.web.app'
     ],
     credentials: true
 }))
@@ -68,6 +70,23 @@ async function run() {
         })
 
         // manage delivery
+        app.patch('/update-status/:id', async (req, res) => {
+            try {
+                const id = req.params.id
+                const data = req.body
+                const query = { _id: new ObjectId(id) }
+                const options = { upsert: true };
+                const doc = {
+                    $set: {
+                        status: data?.status
+                    }
+                }
+                const result = await taskCollection.updateOne(query, doc, options)
+                res.send(result)
+            } catch (error) {
+                console.log(error);
+            }
+        })
         app.patch('/update-status/:id', async (req, res) => {
             try {
                 const id = req.params.id
